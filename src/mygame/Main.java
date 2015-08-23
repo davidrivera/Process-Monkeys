@@ -147,8 +147,6 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         mGeometry.rotate(0, 2*tpf, 0); 
-        ChatControl c = new ChatControl();
-        ChatTextSendEvent e= new ChatTextSendEvent(c, "HELLO CHATJFDKSFLJDS");
         myText.setText(message);
     }
 
