@@ -1,7 +1,5 @@
 package mygame;
 
-import mygame.MyServer;
-
 import com.jme3.app.SimpleApplication;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.effect.ParticleMesh;
@@ -31,114 +29,57 @@ import com.jme3.asset.plugins.HttpZipLocator;
 import com.jme3.math.Vector3f;
 import com.sun.xml.internal.ws.util.StringUtils;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Main extends SimpleApplication {
+public class MyServer extends SimpleApplication {
     
     private static final int PORT = 6666;
     
-    private Geometry mGeometry;
+    private Server mServer;
     
     private BitmapText myText;
     
-    private Client mClient;
+    private Geometry mGeometry;
     
-    private Main mServer;
+    // store state of scenegraph on server
+    // have client messages update state of scenegraph
+    // on update loop:
+    //      // broadcast updates to the scenegraph
+    //      every second, broadcast full scenegraph data
+    //
+    // scenegraph serialization will be basic:
+    //      object name
+    //      object position Vector3f
+    //      object orientation Vector3f
+    //  no scaling will be performed
+    //  no new objects will be added to the scenegraph
     
-    private String message;
-    
-    private Spatial scene;
-    private Spatial crap;
-
     public static void main(String[] args) {
-        Main app = new Main();
+        MyServer app = new MyServer();
         
         app.start();
     }
 
     @Override
-    public void simpleInitApp() {
-
-        assetManager.registerLocator("./assets", ClasspathLocator.class);
-//        assetManager.registerLocator("something.zip", ZipLocator.class);
-        
+    public void simpleInitApp() {  
         mGeometry = generateBoxShit();
         mGeometry.setLocalTranslation(new Vector3f(1.0f, 1.0f, 0.0f));
         rootNode.attachChild(mGeometry);
         
-//        scene = assetManager.loadModel("helicopterthing.scene");
-
-        Spatial crap = assetManager.loadModel("Models/crap.obj");
-        rootNode.attachChild(crap);
-        
-//        assetManager.registerLocator(
-//            "http://jmonkeyengine.googlecode.com/files/wildhouse.zip", 
-//            HttpZipLocator.class);
-//        scene = assetManager.loadModel("main.scene");
-//        rootNode.attachChild(scene);
-        
-        DirectionalLight sun = new DirectionalLight();
-//        AmbientLight sun = new AmbientLight();
-        sun.setDirection(new Vector3f(-1f, -1f, 1f));
-        rootNode.addLight(sun);
-        
-        
         generateHUDText();
-         
-//        startServer();
-//        
-//        startClient();
-
-//        rootNode.attachChild(mGeometry);
     }
     
     public void setMessage(String m){
         message = m;
     }
-    
-    private Geometry generateBoxShit(){
-        Box b = new Box(1, 1, 1);
-        Geometry mGeometry = new Geometry("Box", b);
 
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
-        mGeometry.setMaterial(mat);
-        
-//        mGeometry.setLocalTranslation(new Vector3f(5.0f, 5.0f, 0.0f));
-        return mGeometry;
-    }
-    
-    private void startClient()
-    {
-        try {
-            mClient = Network.connectToServer("localhost", PORT);
-            mClient.start();
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        Timer t = new Timer();
-        final int count = 0;
-        t.scheduleAtFixedRate(new TimerTask() {
-
-            @Override
-            public void run() {
-                if(!mServer.isRunning()){
-                    return;
-                }
-                System.out.println("I'm gonna send a message");
-                ClientMessage m = new ClientMessage("HELLO FROM CLIENT"+String.valueOf(count));
-                mClient.send(m);
-                
-            }
-        }, 10l, 10l);
-    }
-    
     private void startServer() {
-        final Main thing = this;
+        final MyServer thing = this;
               try {
             mServer = Network.createServer(PORT);
             Serializer.registerClass(ClientMessage.class);
@@ -152,19 +93,31 @@ public class Main extends SimpleApplication {
             });
             mServer.addConnectionListener(new ConnectionListener() {
 
-                public void connectionAdded(Server server, HostedConnection conn) {
+                public void connectionAdded(MyServer server, HostedConnection conn) {
                     System.out.println("something happened");
                 }
 
-                public void connectionRemoved(Server server, HostedConnection conn) {
+                public void connectionRemoved(MyServer server, HostedConnection conn) {
                     System.out.println("something happened");
                 }
             });
             mServer.start();
             
         } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MyServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private Geometry generateBoxShit(){
+        Box b = new Box(1, 1, 1);
+        Geometry mGeometry = new Geometry("Box", b);
+
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Blue);
+        mGeometry.setMaterial(mat);
+        
+//        mGeometry.setLocalTranslation(new Vector3f(5.0f, 5.0f, 0.0f));
+        return mGeometry;
     }
     
     private void generateHUDText()
@@ -182,11 +135,25 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        mGeometry.rotate(0, 2*tpf, 0); 
+//        mGeometry.rotate(0, 2*tpf, 0); 
 //        mGeometry.scale(1.001f);
 //        scene.scale(1.001f);
 //        scene.scale(0.999f);
-        myText.setText(message);
+//        myText.setText(message);
+        
+        mGeometry.rotate(0, 2*tpf, 0); 
+        List<Spatial> children = rootNode.getChildren();
+//        myText.setText(children.get(0).toString());
+//        myText.setText(children.get(1).toString());
+        
+        for(Spatial child : children) {
+            Quaternion rot = child.getLocalRotation();
+            Vector3f pos = child.getLocalTranslation();
+            String name = child.getName();
+            myText.setText(rot.toString());
+            // add to list of things that are in the scene graph, include name
+        }
+        // 
 
     }
 
