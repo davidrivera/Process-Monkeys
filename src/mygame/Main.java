@@ -32,6 +32,7 @@ import com.jme3.math.Vector3f;
 import com.sun.xml.internal.ws.util.StringUtils;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -53,6 +54,8 @@ public class Main extends SimpleApplication {
     
     private Spatial scene;
     private Spatial crap;
+    
+    private Random rand;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -65,28 +68,22 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() {
 
-        assetManager.registerLocator("./assets", ClasspathLocator.class);
-//        assetManager.registerLocator("something.zip", ZipLocator.class);
+        rand = new Random();
         
         mGeometry = generateBoxShit();
         mGeometry.setLocalTranslation(new Vector3f(1.0f, 1.0f, 0.0f));
         rootNode.attachChild(mGeometry);
         
-//        scene = assetManager.loadModel("helicopterthing.scene");
+        Spatial colbert = putThisFuckinModelOntoTheScene("colbertrex.obj");
+        
+        Spatial demon = putThisFuckinModelOntoTheScene("demon-ball.obj");
 
-        Spatial crap = assetManager.loadModel("Models/crap.obj");
-        rootNode.attachChild(crap);
+        addDirectionalLight(1.0f, 0.0f, 0.0f);
+        addDirectionalLight(-1.0f, 0.0f, 0.0f);
         
-//        assetManager.registerLocator(
-//            "http://jmonkeyengine.googlecode.com/files/wildhouse.zip", 
-//            HttpZipLocator.class);
-//        scene = assetManager.loadModel("main.scene");
-//        rootNode.attachChild(scene);
-        
-        DirectionalLight sun = new DirectionalLight();
-//        AmbientLight sun = new AmbientLight();
-        sun.setDirection(new Vector3f(-1f, -1f, 1f));
-        rootNode.addLight(sun);
+        AmbientLight ambient = new AmbientLight();
+        ambient.setColor(ColorRGBA.White.mult(1.3f));
+        rootNode.addLight(ambient);
         
         
         generateHUDText();
@@ -96,6 +93,14 @@ public class Main extends SimpleApplication {
         startClient();
 
 //        rootNode.attachChild(mGeometry);
+    }
+    
+    private Spatial putThisFuckinModelOntoTheScene(String name) {
+        Spatial crap = assetManager.loadModel("Models/" + name);
+        crap.setLocalTranslation(new Vector3f(rand.nextFloat()*10.0f, 0.1f, rand.nextFloat()*10.0f));
+        rootNode.attachChild(crap);
+        
+        return crap;
     }
     
     public void setMessage(String m){
@@ -117,7 +122,7 @@ public class Main extends SimpleApplication {
     private void startClient()
     {
         try {
-            mClient = Network.connectToServer("localhost", PORT);
+            mClient = Network.connectToServer("192.168.1.128", PORT);
             mClient.start();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -199,17 +204,23 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
-        mGeometry.rotate(0, 2*tpf, 0); 
+//        mGeometry.rotate(0, 2*tpf, 0); 
 //        mGeometry.scale(1.001f);
 //        scene.scale(1.001f);
 //        scene.scale(0.999f);
-        myText.setText(message);
+//        myText.setText(message);
 
     }
 
     @Override
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
+    }
+
+    private void addDirectionalLight(float x, float y, float z) {
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(x,y,z));
+        rootNode.addLight(sun);
     }
     
 }
