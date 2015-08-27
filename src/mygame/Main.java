@@ -1,39 +1,25 @@
 package mygame;
 
-import mygame.MyServer;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.effect.ParticleEmitter;
-import com.jme3.effect.ParticleMesh;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
 import com.jme3.network.Client;
-import com.jme3.network.ConnectionListener;
-import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.jme3.network.MessageListener;
 import com.jme3.network.Network;
-import com.jme3.network.Server;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
-import com.jme3.system.JmeContext;
 import com.jme3.scene.Spatial;
 import com.jme3.light.DirectionalLight;
 import com.jme3.light.AmbientLight;
-import com.jme3.asset.plugins.ClasspathLocator;
-import com.jme3.asset.plugins.ZipLocator;
-import com.jme3.asset.plugins.HttpZipLocator;
 import com.jme3.math.Vector3f;
-import com.sun.xml.internal.ws.util.StringUtils;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
