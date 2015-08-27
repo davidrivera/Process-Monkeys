@@ -35,6 +35,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Random;
 
 public class MyServer extends SimpleApplication {
     
@@ -45,6 +46,10 @@ public class MyServer extends SimpleApplication {
     private BitmapText myText;
     
     private Geometry mGeometry;
+    
+    private Spatial crap;
+    
+    private Random rand;
     
     // store state of scenegraph on server
     // have client messages update state of scenegraph
@@ -67,18 +72,22 @@ public class MyServer extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {  
+        rand = new Random();
+        
         mGeometry = generateBoxShit();
         mGeometry.setLocalTranslation(new Vector3f(1.0f, 1.0f, 0.0f));
         rootNode.attachChild(mGeometry);
         
-//        Spatial crap = assetManager.loadModel("Models/crap.obj");
-        Spatial crap = assetManager.loadModel("Models/colbertrex.obj");
-        crap.scale(0.1f);
-        rootNode.attachChild(crap);
+        crap = putThisFuckinModelOntoTheScene("crap.obj");
         
-        DirectionalLight sun = new DirectionalLight();
-        sun.setDirection(new Vector3f(-1f, -1f, 1f));
-        rootNode.addLight(sun);
+        Spatial colbert = putThisFuckinModelOntoTheScene("colbertrex.obj");
+        
+        addDirectionalLight(1.0f, 0.0f, 0.0f);
+        addDirectionalLight(-1.0f, 0.0f, 0.0f);
+        
+        AmbientLight ambient = new AmbientLight();
+        ambient.setColor(ColorRGBA.White.mult(1.3f));
+        rootNode.addLight(ambient);
         
         generateHUDText();
     }
@@ -129,6 +138,20 @@ public class MyServer extends SimpleApplication {
         return mGeometry;
     }
     
+    private void addDirectionalLight(float x, float y, float z) {
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(x,y,z));
+        rootNode.addLight(sun);
+    }
+    
+    private Spatial putThisFuckinModelOntoTheScene(String name) {
+        Spatial crap = assetManager.loadModel("Models/" + name);
+        crap.setLocalTranslation(new Vector3f(rand.nextFloat()*10.0f, 0.1f, rand.nextFloat()*10.0f));
+        rootNode.attachChild(crap);
+        
+        return crap;
+    }
+    
     private void generateHUDText()
     {
         guiNode.detachAllChildren();
@@ -149,6 +172,7 @@ public class MyServer extends SimpleApplication {
 //        scene.scale(1.001f);
 //        scene.scale(0.999f);
 //        myText.setText(message);
+        
         
         mGeometry.rotate(0, 2*tpf, 0); 
         List<Spatial> children = rootNode.getChildren();
