@@ -56,7 +56,9 @@ public class Main extends SimpleApplication {
 
     public static void main(String[] args) {
         Main app = new Main();
-        
+        Serializer.registerClass(ClientMessage.class);
+        Serializer.registerClass(SceneGraphMessage.class);
+        Serializer.registerClass(SpatialContainer.class);
         app.start();
     }
 
@@ -91,7 +93,7 @@ public class Main extends SimpleApplication {
          
 //        startServer();
 //        
-//        startClient();
+        startClient();
 
 //        rootNode.attachChild(mGeometry);
     }
@@ -116,8 +118,6 @@ public class Main extends SimpleApplication {
     {
         try {
             mClient = Network.connectToServer("localhost", PORT);
-            Serializer.registerClass(ClientMessage.class);
-            Serializer.registerClass(SceneGraphMessage.class);
             mClient.start();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -133,7 +133,7 @@ public class Main extends SimpleApplication {
                         System.out.println(name);
                     }
                 }
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
         });
         

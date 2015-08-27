@@ -17,11 +17,9 @@ import java.util.HashMap;
 @Serializable
 public class SceneGraphMessage extends AbstractMessage {
            
-      public HashMap<String, SpatialContainer> hash;
+      private HashMap<String, Object> hash = new HashMap<String, Object>();;
     
-      public SceneGraphMessage() {
-          hash = new HashMap<String, SpatialContainer>();
-      }  
+      public SceneGraphMessage() {}  
      
       
       public void pushSomething(Quaternion q, Vector3f v, String name){

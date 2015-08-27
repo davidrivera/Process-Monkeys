@@ -66,7 +66,9 @@ public class MyServer extends SimpleApplication {
     
     public static void main(String[] args) {
         MyServer app = new MyServer();
-        
+        Serializer.registerClass(ClientMessage.class);
+        Serializer.registerClass(SceneGraphMessage.class);
+        Serializer.registerClass(SpatialContainer.class);
         app.start();
     }
 
@@ -115,8 +117,7 @@ public class MyServer extends SimpleApplication {
         final MyServer thing = this;
               try {
             mServer = Network.createServer(PORT);
-            Serializer.registerClass(ClientMessage.class);
-            Serializer.registerClass(SceneGraphMessage.class);
+
             mServer.addMessageListener(new MessageListener() {
 
                 public void messageReceived(Object source, Message m) {
@@ -129,7 +130,9 @@ public class MyServer extends SimpleApplication {
 
 
                 public void connectionAdded(Server server, HostedConnection conn) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    System.out.println(server.getGameName());
+                    System.out.println(conn.getAddress());
+//                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
 
                 public void connectionRemoved(Server server, HostedConnection conn) {
@@ -211,7 +214,7 @@ public class MyServer extends SimpleApplication {
         }
         
         // send the message
-//        System.out.println("You are about to broadcast a message");
+        System.out.println("You are about to broadcast a message");
         this.mServer.broadcast(a);
         
         

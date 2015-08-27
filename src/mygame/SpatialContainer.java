@@ -6,14 +6,17 @@ package mygame;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.network.serializing.Serializable;
 
 /**
  *
  * @author drivera
  */
-public class SpatialContainer {
+@Serializable
+public class SpatialContainer  {
     private Quaternion mQuaternion;
     private Vector3f mVector3f;
+    public SpatialContainer(){}
     public SpatialContainer(Quaternion q, Vector3f v){
         this.mQuaternion = q;
         this.mVector3f = v;
