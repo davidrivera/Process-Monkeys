@@ -86,10 +86,15 @@ public class MyServer extends SimpleApplication {
 //        mario.scale(0.1f);
 //        Spatial luigi = putThisFuckinModelOntoTheScene("luigi_obj.obj");
 //        luigi.scale(0.1f);
+
         
         Spatial demon = putThisFuckinModelOntoTheScene("demon-ball.obj");
 //        luigi.scale(2f);
         
+
+//        
+//        Spatial steve = putThisFuckinModelOntoTheScene("Steve/Steve.obj");
+//        
         addDirectionalLight(1.0f, 0.0f, 0.0f);
         addDirectionalLight(-1.0f, 0.0f, 0.0f);
         
