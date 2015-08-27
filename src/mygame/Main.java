@@ -31,6 +31,7 @@ import com.jme3.asset.plugins.HttpZipLocator;
 import com.jme3.math.Vector3f;
 import com.sun.xml.internal.ws.util.StringUtils;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
@@ -115,57 +116,73 @@ public class Main extends SimpleApplication {
     {
         try {
             mClient = Network.connectToServer("localhost", PORT);
+            Serializer.registerClass(ClientMessage.class);
+            Serializer.registerClass(SceneGraphMessage.class);
             mClient.start();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Timer t = new Timer();
-        final int count = 0;
-        t.scheduleAtFixedRate(new TimerTask() {
+        mClient.addMessageListener(new MessageListener() {
 
-            @Override
-            public void run() {
-                if(!mServer.isRunning()){
-                    return;
+            public void messageReceived(Object source, Message m) {
+                if (m instanceof SceneGraphMessage) {
+                    SceneGraphMessage message = (SceneGraphMessage) m;
+                    HashMap<String, SpatialContainer> h = message.getHash();
+                    for(String name: h.keySet()){
+                        System.out.println(name);
+                    }
                 }
-                System.out.println("I'm gonna send a message");
-                ClientMessage m = new ClientMessage("HELLO FROM CLIENT"+String.valueOf(count));
-                mClient.send(m);
-                
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-        }, 10l, 10l);
+        });
+        
+//        Timer t = new Timer();
+//        final int count = 0;
+//        t.scheduleAtFixedRate(new TimerTask() {
+//
+//            @Override
+//            public void run() {
+////                if(!mServer.isRunning()){
+////                    return;
+////                }
+//                System.out.println("I'm gonna send a message");
+//                ClientMessage m = new ClientMessage("HELLO FROM CLIENT"+String.valueOf(count));
+//                mClient.send(m);
+//                
+//            }
+//        }, 10l, 10l);
     }
     
-    private void startServer() {
-        final Main thing = this;
-              try {
-            mServer = Network.createServer(PORT);
-            Serializer.registerClass(ClientMessage.class);
-            mServer.addMessageListener(new MessageListener() {
-
-                public void messageReceived(Object source, Message m) {
-                    System.out.println("I got a message!");
-                    System.out.println(m.toString());
-                    thing.setMessage(m.toString());
-                }
-            });
-            mServer.addConnectionListener(new ConnectionListener() {
-
-                public void connectionAdded(Server server, HostedConnection conn) {
-                    System.out.println("something happened");
-                }
-
-                public void connectionRemoved(Server server, HostedConnection conn) {
-                    System.out.println("something happened");
-                }
-            });
-            mServer.start();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+//    private void startServer() {
+//        final Main thing = this;
+//              try {
+//            mServer = Network.createServer(PORT);
+//            Serializer.registerClass(ClientMessage.class);
+//            mServer.addMessageListener(new MessageListener() {
+//
+//                public void messageReceived(Object source, Message m) {
+//                    System.out.println("I got a message!");
+//                    System.out.println(m.toString());
+//                    thing.setMessage(m.toString());
+//                }
+//            });
+//            mServer.addConnectionListener(new ConnectionListener() {
+//
+//                public void connectionAdded(Server server, HostedConnection conn) {
+//                    System.out.println("something happened");
+//                }
+//
+//                public void connectionRemoved(Server server, HostedConnection conn) {
+//                    System.out.println("something happened");
+//                }
+//            });
+//            mServer.start();
+//            
+//        } catch (IOException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     
     private void generateHUDText()
     {

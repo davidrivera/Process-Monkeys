@@ -78,14 +78,17 @@ public class MyServer extends SimpleApplication {
         mGeometry.setLocalTranslation(new Vector3f(1.0f, 1.0f, 0.0f));
         rootNode.attachChild(mGeometry);
         
-        crap = putThisFuckinModelOntoTheScene("crap.obj");
+//        crap = putThisFuckinModelOntoTheScene("crap.obj");
         
         Spatial colbert = putThisFuckinModelOntoTheScene("colbertrex.obj");
         
-        Spatial mario = putThisFuckinModelOntoTheScene("mario_obj.obj");
-        mario.scale(0.1f);
-        Spatial luigi = putThisFuckinModelOntoTheScene("luigi_obj.obj");
-        luigi.scale(0.1f);
+//        Spatial mario = putThisFuckinModelOntoTheScene("mario_obj.obj");
+//        mario.scale(0.1f);
+//        Spatial luigi = putThisFuckinModelOntoTheScene("luigi_obj.obj");
+//        luigi.scale(0.1f);
+        
+        Spatial demon = putThisFuckinModelOntoTheScene("demon-ball.obj");
+//        luigi.scale(2f);
         
         addDirectionalLight(1.0f, 0.0f, 0.0f);
         addDirectionalLight(-1.0f, 0.0f, 0.0f);
@@ -95,10 +98,12 @@ public class MyServer extends SimpleApplication {
         rootNode.addLight(ambient);
         
         generateHUDText();
+        
+        startServer();
     }
     
     public void setMessage(String m){
-        message = m;
+//        message = m;
     }
 
     private void startServer() {
@@ -106,6 +111,7 @@ public class MyServer extends SimpleApplication {
               try {
             mServer = Network.createServer(PORT);
             Serializer.registerClass(ClientMessage.class);
+            Serializer.registerClass(SceneGraphMessage.class);
             mServer.addMessageListener(new MessageListener() {
 
                 public void messageReceived(Object source, Message m) {
@@ -116,12 +122,13 @@ public class MyServer extends SimpleApplication {
             });
             mServer.addConnectionListener(new ConnectionListener() {
 
-                public void connectionAdded(MyServer server, HostedConnection conn) {
-                    System.out.println("something happened");
+
+                public void connectionAdded(Server server, HostedConnection conn) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
 
-                public void connectionRemoved(MyServer server, HostedConnection conn) {
-                    System.out.println("something happened");
+                public void connectionRemoved(Server server, HostedConnection conn) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             });
             mServer.start();
@@ -184,13 +191,25 @@ public class MyServer extends SimpleApplication {
 //        myText.setText(children.get(0).toString());
 //        myText.setText(children.get(1).toString());
         
+        SceneGraphMessage a = new SceneGraphMessage();
+        
         for(Spatial child : children) {
             Quaternion rot = child.getLocalRotation();
             Vector3f pos = child.getLocalTranslation();
+            
             String name = child.getName();
+            
+            a.pushSomething(rot, pos, name);
+            
             myText.setText(rot.toString());
             // add to list of things that are in the scene graph, include name
         }
+        
+        // send the message
+//        System.out.println("You are about to broadcast a message");
+        this.mServer.broadcast(a);
+        
+        
         // serialize the list of rot, pos, and name's into a message
         // broadcast the message (?)
 
@@ -200,5 +219,6 @@ public class MyServer extends SimpleApplication {
     public void simpleRender(RenderManager rm) {
         //TODO: add render code
     }
+   
     
 }
