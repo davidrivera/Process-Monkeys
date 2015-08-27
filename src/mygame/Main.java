@@ -9,7 +9,6 @@ import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.network.Client;
 import com.jme3.network.ConnectionListener;
 import com.jme3.network.HostedConnection;
@@ -56,6 +55,8 @@ public class Main extends SimpleApplication {
     private Spatial crap;
     
     private Random rand;
+    
+    private SceneGraphMessage recentState;
 
     public static void main(String[] args) {
         Main app = new Main();
@@ -128,15 +129,13 @@ public class Main extends SimpleApplication {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        final Main self = this;
+        
         mClient.addMessageListener(new MessageListener() {
 
             public void messageReceived(Object source, Message m) {
                 if (m instanceof SceneGraphMessage) {
-                    SceneGraphMessage message = (SceneGraphMessage) m;
-                    HashMap<String, SpatialContainer> h = message.getHash();
-                    for(String name: h.keySet()){
-                        System.out.println(name);
-                    }
+                    self.recentState = (SceneGraphMessage) m;
                 }
 //                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
@@ -209,7 +208,14 @@ public class Main extends SimpleApplication {
 //        scene.scale(1.001f);
 //        scene.scale(0.999f);
 //        myText.setText(message);
-
+        HashMap<String, SpatialContainer> h = recentState.getHash();
+        for(String name: h.keySet()){
+//                        System.out.println(name);
+            SpatialContainer c = h.get(name);
+            Spatial thing = rootNode.getChild(name);
+            thing.setLocalRotation(c.getRot());
+            thing.setLocalTranslation(c.getPos());
+        }
     }
 
     @Override

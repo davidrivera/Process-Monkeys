@@ -21,4 +21,12 @@ public class SpatialContainer  {
         this.mQuaternion = q;
         this.mVector3f = v;
     }
+    
+    public Quaternion getRot() {
+        return mQuaternion;
+    }
+    
+    public Vector3f getPos() {
+        return mVector3f;
+    }
 }
