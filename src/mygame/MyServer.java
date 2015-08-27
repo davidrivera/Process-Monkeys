@@ -71,6 +71,15 @@ public class MyServer extends SimpleApplication {
         mGeometry.setLocalTranslation(new Vector3f(1.0f, 1.0f, 0.0f));
         rootNode.attachChild(mGeometry);
         
+//        Spatial crap = assetManager.loadModel("Models/crap.obj");
+        Spatial crap = assetManager.loadModel("Models/colbertrex.obj");
+        crap.scale(0.1f);
+        rootNode.attachChild(crap);
+        
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(-1f, -1f, 1f));
+        rootNode.addLight(sun);
+        
         generateHUDText();
     }
     
@@ -153,7 +162,8 @@ public class MyServer extends SimpleApplication {
             myText.setText(rot.toString());
             // add to list of things that are in the scene graph, include name
         }
-        // 
+        // serialize the list of rot, pos, and name's into a message
+        // broadcast the message (?)
 
     }
 
