@@ -82,6 +82,11 @@ public class MyServer extends SimpleApplication {
         
         Spatial colbert = putThisFuckinModelOntoTheScene("colbertrex.obj");
         
+        Spatial mario = putThisFuckinModelOntoTheScene("mario_obj.obj");
+        mario.scale(0.1f);
+        Spatial luigi = putThisFuckinModelOntoTheScene("luigi_obj.obj");
+        luigi.scale(0.1f);
+        
         addDirectionalLight(1.0f, 0.0f, 0.0f);
         addDirectionalLight(-1.0f, 0.0f, 0.0f);
         
