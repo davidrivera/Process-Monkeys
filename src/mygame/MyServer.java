@@ -201,7 +201,7 @@ public class MyServer extends SimpleApplication {
         }
         
         // send the message
-        System.out.println("You are about to broadcast a message");
+//        System.out.println("You are about to broadcast a message");
         this.mServer.broadcast(a);
         
         
